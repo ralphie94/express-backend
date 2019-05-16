@@ -15,7 +15,6 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
-    console.log("HIT")
     const user = await User.create(req.body)
     res.json({
       user,
@@ -26,8 +25,16 @@ router.post('/', async (req, res) => {
   }
 });
 
-router.put('/', (req, res) => {
-  return res.json({data: 'Received a PUT HTTP method users'});
+router.put('/', async (req, res) => {
+  try {
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, {new: true});
+    res.json({
+      status: 200,
+      data: updatedUser
+    })
+  } catch(err){
+    console.log(err);
+  }
 });
 
 router.delete('/:id', async (req, res) => {
