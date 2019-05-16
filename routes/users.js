@@ -15,8 +15,12 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   try {
+    console.log("HIT")
     const user = await User.create(req.body)
-    res.json({user})
+    res.json({
+      user,
+      success: user ? true : false
+    })
   } catch(err) {
     res.json({err})
   }
@@ -26,8 +30,16 @@ router.put('/', (req, res) => {
   return res.json({data: 'Received a PUT HTTP method users'});
 });
 
-router.delete('/', (req, res) => {
-  return res.json({data: 'Received a DELETE HTTP method users'});
+router.delete('/:id', async (req, res) => {
+  try {
+    const deletedMovie = await User.findByIdAndRemove(req.params.id);
+    res.json({
+      status: 200,
+      data: deletedMovie
+    })
+  } catch(err){
+    console.log(err)
+  }
 });
 
 router.post('/login', async (req, res) => {
@@ -37,7 +49,7 @@ router.post('/login', async (req, res) => {
     req.session.userId = foundUser._id
     res.json({
       user: foundUser,
-      success: true
+      success: foundUser ? true : false
     })
   } catch(err) {
     res.json({err})
@@ -49,13 +61,16 @@ router.post("/add", async(req,res)=>{
     const foundUser = await User.findById(req.session.userId)
     const movie ={
       title:req.body.title,
-      image:req.body.poster_path
+      image:req.body.poster_path,
+      id: req.body.id
+
     }
-    foundUser.movie.push(movie)
+    foundUser.movies.push(movie)
     foundUser.save()
     res.json({
       success:true,
-      message: "movie has been added"
+      message: "movie has been added",
+      data: foundUser
     })
   }catch(err){
     console.log(err)
