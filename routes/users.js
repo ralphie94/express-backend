@@ -37,15 +37,22 @@ router.put('/:id', async (req, res) => {
   }
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:userId/movies/:movieId', async (req, res) => {
+  console.log('hello')
   try {
-    const deletedMovie = await User.findByIdAndRemove(req.params.id);
+    // console.log(req.params)
+    // const deletedMovie = await User.findByIdAndRemove(req.params.id);
+    const foundUser = await User.findById(req.params.userId)
+    // console.log(foundUser)
+    foundUser.movies = foundUser.movies.filter(m => m.id != Number(req.params.movieId))
+    await foundUser.save()
+    console.log(foundUser, 'new')
     res.json({
       status: 200,
-      data: deletedMovie
+      data: foundUser
     })
   } catch(err){
-    console.log(err)
+    // console.log(err)
   }
 });
 
